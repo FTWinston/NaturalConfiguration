@@ -1,16 +1,26 @@
-﻿namespace NaturalConfiguration
+﻿using System.Text.RegularExpressions;
+
+namespace NaturalConfiguration
 {
     public class ParserError
     {
-        public ParserError(SentenceParser parser, string sentence, string message)
+        public ParserError(string message, Capture capture)
+            : this(message, capture.Index, capture.Length)
+        { }
+
+        public ParserError(string message)
+            : this(message, 0, -1)
+        { }
+
+        private ParserError(string message, int startIndex, int length)
         {
-            Parser = parser;
-            Sentence = sentence;
             Message = message;
+            StartIndex = startIndex;
+            Length = length;
         }
 
-        public SentenceParser Parser { get; }
-        public string Sentence { get; }
         public string Message { get; }
+        public int StartIndex { get; internal set; }
+        public int Length { get; internal set; }
     }
 }

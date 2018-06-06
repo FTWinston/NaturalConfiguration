@@ -10,26 +10,26 @@ namespace NaturalConfiguration
         protected virtual string ExpressionSuffix { get; } = string.Empty;
         protected virtual string ElementExpression { get; } = "\\w+";
 
-        protected override string ParseMatch(TConfiguring configuring, Match match)
+        protected override IEnumerable<ParserError> ParseMatch(TConfiguring configuring, Match match)
         {
-            var values = new List<string>();
-            values.Add(match.Groups[1].Value);
+            var values = new List<Capture>();
+            values.Add(match.Groups[1]);
             if (match.Groups[2].Success)
             {
                 foreach (Capture capture in match.Groups[2].Captures)
                 {
-                    values.Add(capture.Value);
+                    values.Add(capture);
                 }
             }
 
             if (match.Groups[3].Success)
             {
-                values.Add(match.Groups[3].Value);
+                values.Add(match.Groups[3]);
             }
 
             return ParseValues(configuring, values);
         }
 
-        protected abstract string ParseValues(TConfiguring configuring, List<string> values);
+        protected abstract IEnumerable<ParserError> ParseValues(TConfiguring configuring, List<Capture> values);
     }
 }

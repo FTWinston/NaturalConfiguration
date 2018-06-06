@@ -1,13 +1,10 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace NaturalConfiguration
 {
-    public abstract class SentenceParser
-    {
-
-    }
-
-    public abstract class SentenceParser<TConfiguring> : SentenceParser
+    public abstract class SentenceParser<TConfiguring>
     {
         protected SentenceParser()
         {
@@ -17,19 +14,19 @@ namespace NaturalConfiguration
         protected abstract string Expression { get; }
         private Regex Regex { get; }
 
-        public bool Parse(TConfiguring configuring, string sentence, out string error)
+        public bool Parse(TConfiguring configuring, string sentence, out ParserError[] errors)
         {
             var match = Regex.Match(sentence);
             if (!match.Success)
             {
-                error = null;
+                errors = null;
                 return false;
             }
             
-            error = ParseMatch(configuring, match);
+            errors = ParseMatch(configuring, match).ToArray();
             return true;
         }
 
-        protected abstract string ParseMatch(TConfiguring configuring, Match match);
+        protected abstract IEnumerable<ParserError> ParseMatch(TConfiguring configuring, Match match);
     }
 }

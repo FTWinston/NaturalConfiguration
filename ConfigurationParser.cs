@@ -14,13 +14,22 @@ namespace NaturalConfiguration
 
             var errors = new List<ParserError>();
 
-            IEnumerable<string> sentences = SplitSentences(configurationText);
+            IEnumerable<SentenceData> sentences = SplitSentences(configurationText);
 
             foreach (var sentence in sentences)
             {
-                var error = ParseSentence(configuring, sentence);
-                if (error != null)
+                var sentenceErrors = ParseSentence(configuring, sentence.Text);
+                if (sentenceErrors == null)
+                    continue;
+                    
+                foreach (var error in sentenceErrors)
                 {
+                    error.StartIndex += sentence.StartIndex;
+                    if (error.Length == -1)
+                    {
+                        error.Length = sentence.Length;
+                    }
+
                     errors.Add(error);
                 }
             }
@@ -28,29 +37,64 @@ namespace NaturalConfiguration
             return errors;
         }
 
-        private IEnumerable<string> SplitSentences(string configurationText)
+        private IEnumerable<SentenceData> SplitSentences(string configurationText)
         {
-            // TODO: if sentences can contain a . inside a quote (or as a number separator?), don't split on those.
-            return configurationText.Split('.')
-                .Select(sentence => sentence.Trim(' ', '\t', '\n', '\r'))
-                .Where(sentence => sentence.Length > 0);
+            int startPos = -1, endPos = -1;
+
+            while (true)
+            {
+                startPos = endPos + 1;
+                endPos = configurationText.IndexOf('.', startPos);
+
+                if (endPos == -1)
+                    break;
+
+                string text = configurationText.Substring(startPos, endPos - startPos);
+
+                int numTrimStart = text.TakeWhile(c => char.IsWhiteSpace(c)).Count();
+                text = text.Substring(numTrimStart);
+
+                if (text.Length == 0)
+                {
+                    continue;
+                }
+
+                startPos += numTrimStart;
+
+                int numTrimEnd = text.Reverse().TakeWhile(c => char.IsWhiteSpace(c)).Count();
+                text = text.Substring(0, text.Length - numTrimEnd);
+
+                yield return new SentenceData()
+                {
+                    Text = text,
+                    StartIndex = startPos,
+                    Length = endPos - startPos,
+                };
+            }
         }
 
         private SentenceParser<TConfiguring>[] SentenceParsers { get; set; }
 
-        private ParserError ParseSentence(TConfiguring configuring, string sentence)
+        private ParserError[] ParseSentence(TConfiguring configuring, string sentence)
         {
             foreach (var parser in SentenceParsers)
             {
-                if (parser.Parse(configuring, sentence, out string errorMsg))
+                if (parser.Parse(configuring, sentence, out ParserError[] errors))
                 {
-                    return errorMsg == null ? null : new ParserError(parser, sentence, errorMsg);
+                    return errors;
                 }
             }
 
-            return new ParserError(null, sentence, "Sentence doesn't match any known rules.");
+            return new[] { new ParserError("Sentence doesn't match any known rules.") };
         }
 
         protected abstract IEnumerable<SentenceParser<TConfiguring>> CreateSentenceParsers();
+
+        struct SentenceData
+        {
+            public string Text;
+            public int StartIndex;
+            public int Length;
+        }
     }
 }
