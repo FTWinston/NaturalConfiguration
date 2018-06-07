@@ -18,6 +18,8 @@ namespace NaturalConfiguration
         protected abstract string ExpressionText { get; }
         public Regex Expression { get; }
 
+        protected const string WordExpression = "[^,\\s]+";
+
         public bool Parse(TConfiguring configuring, string sentence, out ParserError[] errors)
         {
             var match = Expression.Match(sentence);
