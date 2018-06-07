@@ -5,7 +5,7 @@ namespace NaturalConfiguration
 {
     public abstract class ListParser<TConfiguring>: SentenceParser<TConfiguring>
     {
-        protected override string Expression => $"{ExpressionPrefix}({ElementExpression})(?:, ({ElementExpression}))*(?: and ({ElementExpression}))?{ExpressionSuffix}";
+        protected override string ExpressionText => $"{ExpressionPrefix}({ElementExpression})(?:, ({ElementExpression}))*(?: and ({ElementExpression}))?{ExpressionSuffix}";
         protected abstract string ExpressionPrefix { get; }
         protected virtual string ExpressionSuffix { get; } = string.Empty;
         protected virtual string ElementExpression { get; } = "\\w+";

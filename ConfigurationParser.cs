@@ -7,11 +7,6 @@ namespace NaturalConfiguration
     {
         public List<ParserError> Parse(TConfiguring configuring, string configurationText)
         {
-            if (SentenceParsers == null)
-            {
-                SentenceParsers = CreateSentenceParsers().ToArray();
-            }
-
             var errors = new List<ParserError>();
 
             IEnumerable<SentenceData> sentences = SplitSentences(configurationText);
@@ -73,7 +68,17 @@ namespace NaturalConfiguration
             }
         }
 
-        private SentenceParser<TConfiguring>[] SentenceParsers { get; set; }
+        private SentenceParser<TConfiguring>[] _sentenceParsers = null;
+        public SentenceParser<TConfiguring>[] SentenceParsers
+        {
+            get
+            {
+                if (_sentenceParsers == null)
+                    _sentenceParsers = CreateSentenceParsers().ToArray();
+
+                return _sentenceParsers;
+            }
+        }
 
         private ParserError[] ParseSentence(TConfiguring configuring, string sentence)
         {

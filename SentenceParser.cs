@@ -8,15 +8,19 @@ namespace NaturalConfiguration
     {
         protected SentenceParser()
         {
-            Regex = new Regex($"^{Expression}$", RegexOptions.IgnoreCase | RegexOptions.Singleline);
+            Expression = new Regex($"^{ExpressionText}$", RegexOptions.IgnoreCase | RegexOptions.Singleline);
         }
-        
-        protected abstract string Expression { get; }
-        private Regex Regex { get; }
+     
+        public abstract string Name { get; }
+        public virtual string Group => null;
+        public abstract string[] Examples { get; }
+
+        protected abstract string ExpressionText { get; }
+        public Regex Expression { get; }
 
         public bool Parse(TConfiguring configuring, string sentence, out ParserError[] errors)
         {
-            var match = Regex.Match(sentence);
+            var match = Expression.Match(sentence);
             if (!match.Success)
             {
                 errors = null;
