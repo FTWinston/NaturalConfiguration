@@ -9,27 +9,28 @@ namespace NaturalConfiguration
         protected abstract string ExpressionPrefix { get; }
         protected virtual string ExpressionSuffix { get; } = string.Empty;
         protected virtual string ElementExpression { get; } = WordExpression;
+        protected virtual int ListGroupOffset { get; } = 0;
 
-        protected override IEnumerable<ParserError> ParseMatch(TConfiguring configuring, Match match)
+        protected sealed override IEnumerable<ParserError> ParseMatch(TConfiguring configuring, Match match)
         {
             var values = new List<Capture>();
-            values.Add(match.Groups[1]);
-            if (match.Groups[2].Success)
+            values.Add(match.Groups[1 + ListGroupOffset]);
+            if (match.Groups[2 + ListGroupOffset].Success)
             {
-                foreach (Capture capture in match.Groups[2].Captures)
+                foreach (Capture capture in match.Groups[2 + ListGroupOffset].Captures)
                 {
                     values.Add(capture);
                 }
             }
 
-            if (match.Groups[3].Success)
+            if (match.Groups[3 + ListGroupOffset].Success)
             {
-                values.Add(match.Groups[3]);
+                values.Add(match.Groups[3 + ListGroupOffset]);
             }
 
-            return ParseValues(configuring, values);
+            return ParseMatch(configuring, match, values);
         }
 
-        protected abstract IEnumerable<ParserError> ParseValues(TConfiguring configuring, List<Capture> values);
+        protected abstract IEnumerable<ParserError> ParseMatch(TConfiguring configuring, Match match, List<Capture> listValues);
     }
 }
