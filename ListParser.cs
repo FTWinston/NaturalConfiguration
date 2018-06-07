@@ -8,7 +8,7 @@ namespace NaturalConfiguration
         protected override string ExpressionText => $"{ExpressionPrefix}({ElementExpression})(?:, ({ElementExpression}))*(?: and ({ElementExpression}))?{ExpressionSuffix}";
         protected abstract string ExpressionPrefix { get; }
         protected virtual string ExpressionSuffix { get; } = string.Empty;
-        protected virtual string ElementExpression { get; } = "\\w+";
+        protected virtual string ElementExpression { get; } = "[^,\\s]+";
 
         protected override IEnumerable<ParserError> ParseMatch(TConfiguring configuring, Match match)
         {
