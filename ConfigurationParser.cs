@@ -5,6 +5,11 @@ namespace NaturalConfiguration
 {
     public abstract class ConfigurationParser<TConfiguring>
     {
+        protected ConfigurationParser()
+        {
+            SentenceParsers = CreateSentenceParsers().ToArray();
+        }
+
         public List<ParserError> Parse(TConfiguring configuring, string configurationText)
         {
             var errors = new List<ParserError>();
@@ -68,17 +73,7 @@ namespace NaturalConfiguration
             }
         }
 
-        private SentenceParser<TConfiguring>[] _sentenceParsers = null;
-        public SentenceParser<TConfiguring>[] SentenceParsers
-        {
-            get
-            {
-                if (_sentenceParsers == null)
-                    _sentenceParsers = CreateSentenceParsers().ToArray();
-
-                return _sentenceParsers;
-            }
-        }
+        public SentenceParser<TConfiguring>[] SentenceParsers { get; }
 
         private ParserError[] ParseSentence(TConfiguring configuring, string sentence)
         {
