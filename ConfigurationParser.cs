@@ -51,18 +51,17 @@ namespace NaturalConfiguration
 
                 string text = configurationText.Substring(startPos, endPos - startPos);
 
-                int numTrimStart = text.TakeWhile(c => char.IsWhiteSpace(c)).Count();
-                text = text.Substring(numTrimStart);
+                int origLength = text.Length;
+                text = text.TrimStart();
 
                 if (text.Length == 0)
                 {
                     continue;
                 }
 
-                startPos += numTrimStart;
+                startPos += text.Length - origLength;
 
-                int numTrimEnd = text.Reverse().TakeWhile(c => char.IsWhiteSpace(c)).Count();
-                text = text.Substring(0, text.Length - numTrimEnd);
+                text = text.TrimEnd();
 
                 yield return new SentenceData()
                 {
