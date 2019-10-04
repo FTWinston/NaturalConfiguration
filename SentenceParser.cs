@@ -11,8 +11,6 @@ namespace NaturalConfiguration
             Expression = new Regex($"^{ExpressionText}$", RegexOptions.IgnoreCase | RegexOptions.Singleline);
         }
      
-        public abstract string Name { get; }
-        public virtual string Group => null;
         public abstract string[] Examples { get; }
 
         protected abstract string ExpressionText { get; }

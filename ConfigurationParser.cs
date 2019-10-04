@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace NaturalConfiguration
@@ -8,6 +9,8 @@ namespace NaturalConfiguration
         protected ConfigurationParser()
         {
             SentenceParsers = CreateSentenceParsers().ToArray();
+
+            Examples = new Lazy<string[]>(() => SentenceParsers.SelectMany(s => s.Examples).ToArray());
         }
 
         public List<ParserError> Parse(TConfiguring configuring, string configurationText)
@@ -72,7 +75,9 @@ namespace NaturalConfiguration
             }
         }
 
-        public SentenceParser<TConfiguring>[] SentenceParsers { get; }
+        private SentenceParser<TConfiguring>[] SentenceParsers { get; }
+
+        public Lazy<string[]> Examples { get; }
 
         private ParserError[] ParseSentence(TConfiguring configuring, string sentence)
         {
