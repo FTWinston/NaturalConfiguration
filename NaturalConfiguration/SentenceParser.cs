@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -18,19 +19,18 @@ namespace NaturalConfiguration
 
         protected const string WordExpression = "[^,\\s]+";
 
-        public bool Parse(TConfiguring configuring, string sentence, out ParserError[] errors)
+        public bool Parse(string sentence, Action<Action<TConfiguring>> action, Action<ParserError> error)
         {
             var match = Expression.Match(sentence);
             if (!match.Success)
             {
-                errors = null;
                 return false;
             }
             
-            errors = ParseMatch(configuring, match).ToArray();
+            ParseMatch(match, action, error);
             return true;
         }
 
-        protected abstract IEnumerable<ParserError> ParseMatch(TConfiguring configuring, Match match);
+        protected abstract IEnumerable<ParserError> ParseMatch(Match match, Action<Action<TConfiguring>> action, Action<ParserError> error);
     }
 }

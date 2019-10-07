@@ -13,7 +13,12 @@ namespace NaturalConfiguration
             Examples = new Lazy<string[]>(() => SentenceParsers.SelectMany(s => s.Examples).ToArray());
         }
 
-        public List<ParserError> Parse(TConfiguring configuring, string configurationText)
+        public List<ParserError> Validate(string configurationText)
+        {
+
+        }
+
+        public List<ParserError> Configure(string configurationText, TConfiguring configuring)
         {
             var errors = new List<ParserError>();
 
@@ -79,11 +84,11 @@ namespace NaturalConfiguration
 
         public Lazy<string[]> Examples { get; }
 
-        private ParserError[] ParseSentence(TConfiguring configuring, string sentence)
+        private ParserError[] ParseSentence(List<Action<TConfiguring>> actions, string sentence)
         {
             foreach (var parser in SentenceParsers)
             {
-                if (parser.Parse(configuring, sentence, out ParserError[] errors))
+                if (parser.Parse(sentence, actions, errors))
                 {
                     return errors;
                 }
