@@ -85,7 +85,7 @@ namespace NaturalConfiguration
                     continue;
                 }
 
-                startPos += text.Length - origLength;
+                startPos += origLength - text.Length;
 
                 text = text.TrimEnd();
 

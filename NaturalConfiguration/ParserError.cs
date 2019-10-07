@@ -12,7 +12,7 @@ namespace NaturalConfiguration
             : this(message, 0, -1)
         { }
 
-        private ParserError(string message, int startIndex, int length)
+        public ParserError(string message, int startIndex, int length)
         {
             Message = message;
             StartIndex = startIndex;

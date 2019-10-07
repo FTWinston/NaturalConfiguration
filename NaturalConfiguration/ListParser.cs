@@ -12,7 +12,7 @@ namespace NaturalConfiguration
         protected virtual string ElementExpression { get; } = WordExpression;
         protected virtual int ListGroupOffset { get; } = 0;
 
-        protected sealed override IEnumerable<ParserError> ParseMatch(Match match, Action<Action<TConfiguring>> action, Action<ParserError> error)
+        protected sealed override void ParseMatch(Match match, Action<Action<TConfiguring>> action, Action<ParserError> error)
         {
             var values = new List<Capture>();
 
@@ -30,9 +30,9 @@ namespace NaturalConfiguration
                 values.Add(match.Groups[3 + ListGroupOffset]);
             }
 
-            return ParseMatch(match, values, action, error);
+            ParseMatch(match, values, action, error);
         }
 
-        protected abstract IEnumerable<ParserError> ParseMatch(Match match, List<Capture> listValues, Action<Action<TConfiguring>> action, Action<ParserError> error);
+        protected abstract void ParseMatch(Match match, List<Capture> listValues, Action<Action<TConfiguring>> action, Action<ParserError> error);
     }
 }

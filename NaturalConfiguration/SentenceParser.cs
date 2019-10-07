@@ -31,6 +31,6 @@ namespace NaturalConfiguration
             return true;
         }
 
-        protected abstract IEnumerable<ParserError> ParseMatch(Match match, Action<Action<TConfiguring>> action, Action<ParserError> error);
+        protected abstract void ParseMatch(Match match, Action<Action<TConfiguring>> action, Action<ParserError> error);
     }
 }
