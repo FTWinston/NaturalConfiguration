@@ -19,7 +19,7 @@ namespace NaturalConfiguration
 
         protected const string WordExpression = "[^,\\s]+";
 
-        public bool Parse(string sentence, Action<Action<TConfiguring>> action, Action<ParserError> error)
+        public bool Parse(string sentence, ICollection<Action<TConfiguring>> actions, ICollection<ParserError> errors)
         {
             var match = Expression.Match(sentence);
             if (!match.Success)
@@ -27,7 +27,7 @@ namespace NaturalConfiguration
                 return false;
             }
             
-            ParseMatch(match, action, error);
+            ParseMatch(match, action => actions.Add(action), error => errors.Add(error));
             return true;
         }
 

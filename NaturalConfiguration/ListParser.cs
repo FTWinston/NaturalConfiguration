@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace NaturalConfiguration
@@ -11,9 +12,10 @@ namespace NaturalConfiguration
         protected virtual string ElementExpression { get; } = WordExpression;
         protected virtual int ListGroupOffset { get; } = 0;
 
-        protected sealed override IEnumerable<ParserError> ParseMatch(TConfiguring configuring, Match match)
+        protected sealed override IEnumerable<ParserError> ParseMatch(Match match, Action<Action<TConfiguring>> action, Action<ParserError> error)
         {
             var values = new List<Capture>();
+
             values.Add(match.Groups[1 + ListGroupOffset]);
             if (match.Groups[2 + ListGroupOffset].Success)
             {
@@ -28,9 +30,9 @@ namespace NaturalConfiguration
                 values.Add(match.Groups[3 + ListGroupOffset]);
             }
 
-            return ParseMatch(configuring, match, values);
+            return ParseMatch(match, values, action, error);
         }
 
-        protected abstract IEnumerable<ParserError> ParseMatch(TConfiguring configuring, Match match, List<Capture> listValues);
+        protected abstract IEnumerable<ParserError> ParseMatch(Match match, List<Capture> listValues, Action<Action<TConfiguring>> action, Action<ParserError> error);
     }
 }
