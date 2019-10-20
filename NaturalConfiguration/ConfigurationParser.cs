@@ -42,7 +42,7 @@ namespace NaturalConfiguration
             actions = new List<Action<TConfiguring>>();
             errors = new List<ParserError>();
 
-            IEnumerable<SentenceData> sentences = SplitSentences(configurationText);
+            IEnumerable<SentenceData> sentences = SplitSentences(configurationText, out bool hasUnfinishedSentence);
 
             foreach (var sentence in sentences)
             {
@@ -61,10 +61,16 @@ namespace NaturalConfiguration
                     errors.Add(error);
                 }
             }
+
+            if (hasUnfinishedSentence)
+            {
+                errors.Add(new ParserError("The last sentence is unfinished.", configurationText.Length - 1, 1));
+            }
         }
 
-        private IEnumerable<SentenceData> SplitSentences(string configurationText)
+        private List<SentenceData> SplitSentences(string configurationText, out bool hasUnfinishedSentence)
         {
+            var sentences = new List<SentenceData>();
             int startPos, endPos = -1;
 
             while (true)
@@ -73,7 +79,10 @@ namespace NaturalConfiguration
                 endPos = configurationText.IndexOf('.', startPos);
 
                 if (endPos == -1)
-                    break;
+                {
+                    hasUnfinishedSentence = startPos < configurationText.Length;
+                    return sentences;
+                }
 
                 string text = configurationText.Substring(startPos, endPos - startPos);
 
@@ -89,12 +98,12 @@ namespace NaturalConfiguration
 
                 text = text.TrimEnd();
 
-                yield return new SentenceData()
+                sentences.Add(new SentenceData
                 {
                     Text = text,
                     StartIndex = startPos,
                     Length = endPos - startPos,
-                };
+                });
             }
         }
 

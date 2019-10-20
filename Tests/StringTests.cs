@@ -71,6 +71,22 @@ namespace NaturalConfiguration.Tests
         }
 
         [Fact]
+        public void IdentifyUnfinishedSentenceError()
+        {
+            var parser = new StringConfigurer();
+
+            var errors = parser.Validate("Convert to upper case. Convert to lower case");
+
+            Assert.Single(errors);
+
+            var error = errors[0];
+
+            Assert.Equal(43, error.StartIndex);
+            Assert.Equal(1, error.Length);
+            Assert.Equal("The last sentence is unfinished.", error.Message);
+        }
+
+        [Fact]
         public void IdentifySecondSentenceError()
         {
             var parser = new StringConfigurer();
